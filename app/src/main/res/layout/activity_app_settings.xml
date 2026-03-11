@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A192E"
+    tools:context=".AppSettingsActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_baseline_arrow_back_24"
+                android:drawablePadding="8dp"
+                android:text="Back"
+                android:textColor="#00C89C"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Settings"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage your app preferences and security"
+                android:textColor="#B0B0B0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="ACCOUNT"
+                android:textColor="#B0B0B0"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_rounded_dark"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/edit_profile_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_edit_24"
+                    android:text="Edit Profile" />
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    android:id="@+id/change_password_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_lock_24"
+                    android:text="Change Password" />
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    android:id="@+id/privacy_security_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_security_24"
+                    android:text="Privacy &amp; Security" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="ENCRYPTION SETTINGS"
+                android:textColor="#B0B0B0"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_rounded_dark"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    style="@style/SettingsItem.Info"
+                    android:drawableStart="@drawable/ic_baseline_lock_24"
+                    android:text="Default Encryption Mode - AES-256-GCM"/>
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    style="@style/SettingsItem.Info"
+                    android:drawableStart="@drawable/ic_baseline_vpn_key_24"
+                    android:text="Key Protection - RSA-4096 Enabled"/>
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    style="@style/SettingsItem.Info"
+                    android:drawableStart="@drawable/ic_baseline_verified_user_24"
+                    android:text="Integrity Verification - SHA-3 Active"/>
+
+                <View style="@style/Divider" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/auto_integrity_check_switch"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_check_circle_24"
+                    android:text="Auto-Integrity Check" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="PREFERENCES"
+                android:textColor="#B0B0B0"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_rounded_dark"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/notifications_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_notifications_24"
+                    android:text="Notifications" />
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    style="@style/SettingsItem.Info"
+                    android:drawableStart="@drawable/ic_baseline_language_24"
+                    android:text="Language - English"/>
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    android:id="@+id/accessibility_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_accessibility_24"
+                    android:text="Accessibility" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="SUPPORT"
+                android:textColor="#B0B0B0"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_rounded_dark"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/help_faq_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_help_24"
+                    android:text="Help &amp; FAQ" />
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    android:id="@+id/about_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_info_24"
+                    android:text="About" />
+
+                <View style="@style/Divider" />
+
+                <TextView
+                    android:id="@+id/terms_conditions_button"
+                    style="@style/SettingsItem"
+                    android:drawableStart="@drawable/ic_baseline_description_24"
+                    android:text="Terms &amp; Conditions" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_advanced_encryption"
+                android:drawableStart="@drawable/ic_baseline_verified_user_24"
+                android:drawablePadding="8dp"
+                android:padding="16dp"
+                android:text="Advanced Encryption Active\nYour files are protected using AES-256-GCM, RSA-4096, and SHA-3 verification."
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#1A2F4B"
+        app:itemIconTint="@color/bottom_nav_item_color"
+        app:itemTextColor="@color/bottom_nav_item_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
