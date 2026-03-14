@@ -7,6 +7,30 @@
     android:background="#1A344E"
     tools:context=".LoginActivity">
 
+    <!-- Top Left Image: SIMATS Logo -->
+    <ImageView
+        android:id="@+id/logo_left"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/logo_simats"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@mipmap/ic_launcher" />
+
+    <!-- Top Right Image: Engineering Logo -->
+    <ImageView
+        android:id="@+id/logo_right"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/logo_engineering"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@mipmap/ic_launcher" />
+
     <ImageView
         android:id="@+id/lock_icon"
         android:layout_width="150dp"
@@ -153,10 +177,23 @@
         android:text="Sign Up"
         android:textColor="#00C89C"
         app:cornerRadius="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/powered_by_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_button"
         app:strokeColor="#00C89C" />
+
+    <!-- Powered By Text -->
+    <TextView
+        android:id="@+id/powered_by_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Powered By SIMATS Engineering"
+        android:textColor="#B0B0B0"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,19 @@
     <color name="text_secondary">#8A000000</color>
     <color name="colorPrimary">@color/purple_500</color>
 
+    <!-- App Colors -->
+    <color name="navy_dark">#0A1F44</color>
+    <color name="navy_header">#112A5D</color>
+    <color name="navy_card">#1A3A5C</color>
+    <color name="teal_400">#2DD4BF</color>
+    <color name="teal_500">#14B8A6</color>
+    <color name="green_400">#4ADE80</color>
+    <color name="blue_500">#3B82F6</color>
+    <color name="orange_300">#FDBA74</color>
+    <color name="red_200">#FECACA</color>
+    <color name="text_muted">#B0FFFFFF</color>
+    <color name="text_dim">#80FFFFFF</color>
+
     <!-- Switch Colors -->
     <color name="switch_thumb_on">#00E676</color>
     <color name="switch_thumb_off">#424242</color>

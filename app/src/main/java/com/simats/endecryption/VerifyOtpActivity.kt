@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import com.google.gson.JsonParser
 import com.simats.endecryption.databinding.ActivityVerifyOtpBinding
 import com.simats.endecryption.network.ApiClient
 import com.simats.endecryption.network.GenericResponse
@@ -23,6 +24,7 @@ class VerifyOtpActivity : BaseActivity() {
         setContentView(binding.root)
 
         val email = intent.getStringExtra("EMAIL") ?: ""
+        val name = intent.getStringExtra("NAME") ?: "User"
         val isFromSignUp = intent.getBooleanExtra("FROM_SIGNUP", false)
 
         binding.verifyOtpButton.isEnabled = false
@@ -40,7 +42,7 @@ class VerifyOtpActivity : BaseActivity() {
         binding.verifyOtpButton.setOnClickListener {
             val enteredOtp = binding.otpEditText.text.toString().trim()
             if (enteredOtp.length == 6) {
-                verifyOtp(email, enteredOtp, isFromSignUp)
+                verifyOtp(email, name, enteredOtp, isFromSignUp)
             } else {
                 Toast.makeText(this, "Invalid OTP", Toast.LENGTH_SHORT).show()
             }
@@ -51,12 +53,12 @@ class VerifyOtpActivity : BaseActivity() {
         }
 
         binding.resendOtpText.setOnClickListener {
-            // Your backend doesn't have a resend OTP endpoint yet
-            Toast.makeText(this, "Resend OTP not implemented in backend", Toast.LENGTH_SHORT).show()
+            // Implementation for resend logic if available in backend
+            Toast.makeText(this, "Resend OTP feature coming soon", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun verifyOtp(email: String, otp: String, isFromSignUp: Boolean) {
+    private fun verifyOtp(email: String, name: String, otp: String, isFromSignUp: Boolean) {
         val request = VerifyOtpRequest(email, otp)
         
         binding.verifyOtpButton.isEnabled = false
@@ -65,26 +67,42 @@ class VerifyOtpActivity : BaseActivity() {
             override fun onResponse(call: Call<GenericResponse>, response: Response<GenericResponse>) {
                 binding.verifyOtpButton.isEnabled = true
                 if (response.isSuccessful) {
-                    Toast.makeText(this@VerifyOtpActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
                     if (isFromSignUp) {
+                        // Show welcome notification
+                        NotificationHelper.showNotification(
+                            this@VerifyOtpActivity,
+                            "Welcome to EnDecryption",
+                            "Welcome $name! Your account has been created successfully.",
+                            R.drawable.ic_notification_bell,
+                            "security_alerts"
+                        )
+                        
                         Toast.makeText(this@VerifyOtpActivity, "Registration Successful! Please login.", Toast.LENGTH_LONG).show()
                         val intent = Intent(this@VerifyOtpActivity, LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                     } else {
-                        // This handles Forgot Password flow
-                        startActivity(Intent(this@VerifyOtpActivity, CreateNewPasswordActivity::class.java))
+                        // Forgot Password flow - redirect to create new password
+                        val intent = Intent(this@VerifyOtpActivity, CreateNewPasswordActivity::class.java)
+                        intent.putExtra("EMAIL", email)
+                        startActivity(intent)
                     }
                     finish()
                 } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Verification failed"
-                    Toast.makeText(this@VerifyOtpActivity, errorMsg, Toast.LENGTH_LONG).show()
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        // FastAPI returns error detail in "detail" field
+                        JsonParser.parseString(errorBody ?: "{}").asJsonObject.get("detail").asString
+                    } catch (e: Exception) {
+                        "Invalid OTP or verification failed"
+                    }
+                    Toast.makeText(this@VerifyOtpActivity, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<GenericResponse>, t: Throwable) {
                 binding.verifyOtpButton.isEnabled = true
-                Toast.makeText(this@VerifyOtpActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@VerifyOtpActivity, "Network Error: Check your connection", Toast.LENGTH_SHORT).show()
             }
         })
     }

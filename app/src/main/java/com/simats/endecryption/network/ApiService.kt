@@ -34,7 +34,10 @@ interface ApiService {
     fun encryptFile(
         @Part("email") email: RequestBody,
         @Part file: MultipartBody.Part
-    ): Call<ResponseBody>
+    ): Call<EncryptionResponse>
+
+    @GET("download-encrypted/{file_id}")
+    fun downloadEncryptedFile(@Path("file_id") fileId: Int): Call<ResponseBody>
 
     @Multipart
     @POST("decrypt-file")

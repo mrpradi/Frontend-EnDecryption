@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
+import org.json.JSONObject
 import com.simats.endecryption.databinding.ActivitySignUpBinding
 import com.simats.endecryption.network.ApiClient
 import com.simats.endecryption.network.GenericResponse
@@ -118,21 +118,27 @@ class SignUpActivity : BaseActivity() {
             override fun onResponse(call: Call<GenericResponse>, response: Response<GenericResponse>) {
                 binding.continueButton.isEnabled = true
                 if (response.isSuccessful) {
-                    Toast.makeText(this@SignUpActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SignUpActivity, response.body()?.message ?: "OTP Sent", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@SignUpActivity, VerifyOtpActivity::class.java)
                     intent.putExtra("EMAIL", email)
+                    intent.putExtra("NAME", name) // Pass name for welcome notification later
                     intent.putExtra("FROM_SIGNUP", true)
-                    // We don't need to pass all details now as they are already in the DB
                     startActivity(intent)
                 } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Registration failed"
-                    Toast.makeText(this@SignUpActivity, errorMsg, Toast.LENGTH_LONG).show()
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        // Backend usually returns {"detail": "Error Message"} for exceptions
+                        JSONObject(errorBody ?: "{}").getString("detail")
+                    } catch (e: Exception) {
+                        "Registration failed"
+                    }
+                    Toast.makeText(this@SignUpActivity, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<GenericResponse>, t: Throwable) {
                 binding.continueButton.isEnabled = true
-                Toast.makeText(this@SignUpActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SignUpActivity, "Server unreachable. Check your connection.", Toast.LENGTH_SHORT).show()
             }
         })
     }
