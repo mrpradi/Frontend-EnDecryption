@@ -29,12 +29,33 @@ class ForgotPasswordActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            // For now, let's generate a random 6-digit OTP until the backend is connected.
-            val otp = (100000..999999).random().toString()
-            val intent = Intent(this, VerifyOtpActivity::class.java)
-            intent.putExtra("OTP", otp)
-            intent.putExtra("EMAIL", email)
-            startActivity(intent)
+            // Call backend to send OTP
+            sendOtpButton.isEnabled = false
+            val request = com.simats.endecryption.network.ForgotPasswordRequest(email)
+            com.simats.endecryption.network.ApiClient.instance.forgotPassword(request).enqueue(object : retrofit2.Callback<com.simats.endecryption.network.GenericResponse> {
+                override fun onResponse(call: retrofit2.Call<com.simats.endecryption.network.GenericResponse>, response: retrofit2.Response<com.simats.endecryption.network.GenericResponse>) {
+                    sendOtpButton.isEnabled = true
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@ForgotPasswordActivity, response.body()?.message ?: "OTP Sent", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@ForgotPasswordActivity, VerifyOtp2Activity::class.java)
+                        intent.putExtra("EMAIL", email)
+                        startActivity(intent)
+                    } else {
+                        val errorMsg = try {
+                            val errorObj = org.json.JSONObject(response.errorBody()?.string() ?: "{}")
+                            errorObj.getString("detail")
+                        } catch (e: Exception) {
+                            "Failed to send OTP"
+                        }
+                        Toast.makeText(this@ForgotPasswordActivity, errorMsg, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onFailure(call: retrofit2.Call<com.simats.endecryption.network.GenericResponse>, t: Throwable) {
+                    sendOtpButton.isEnabled = true
+                    Toast.makeText(this@ForgotPasswordActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         backButton.setOnClickListener {

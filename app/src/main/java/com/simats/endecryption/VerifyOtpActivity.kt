@@ -53,8 +53,22 @@ class VerifyOtpActivity : BaseActivity() {
         }
 
         binding.resendOtpText.setOnClickListener {
-            // Implementation for resend logic if available in backend
-            Toast.makeText(this, "Resend OTP feature coming soon", Toast.LENGTH_SHORT).show()
+            val request = com.simats.endecryption.network.ForgotPasswordRequest(email)
+            Toast.makeText(this, "Resending OTP...", Toast.LENGTH_SHORT).show()
+            
+            ApiClient.instance.resendOtp(request).enqueue(object : Callback<GenericResponse> {
+                override fun onResponse(call: Call<GenericResponse>, response: Response<GenericResponse>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@VerifyOtpActivity, "New OTP sent!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@VerifyOtpActivity, "Failed to resend OTP", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<GenericResponse>, t: Throwable) {
+                    Toast.makeText(this@VerifyOtpActivity, "Network Error", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 
@@ -81,10 +95,12 @@ class VerifyOtpActivity : BaseActivity() {
                         val intent = Intent(this@VerifyOtpActivity, LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+                        finish()
                     } else {
                         // Forgot Password flow - redirect to create new password
                         val intent = Intent(this@VerifyOtpActivity, CreateNewPasswordActivity::class.java)
                         intent.putExtra("EMAIL", email)
+                        intent.putExtra("OTP", otp) // Pass the OTP for verification in resetPassword
                         startActivity(intent)
                     }
                     finish()

@@ -7,13 +7,13 @@
     android:background="#1A344E"
     tools:context=".LoginActivity">
 
-    <!-- Top Left Image: SIMATS Logo -->
+    <!-- Top Left Image: Savetha Logo -->
     <ImageView
         android:id="@+id/logo_left"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_margin="16dp"
-        android:src="@drawable/logo_simats"
+        android:src="@drawable/logo_savetha"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,7 +25,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_margin="16dp"
-        android:src="@drawable/logo_engineering"
+        android:src="@drawable/logo_engineering_new"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

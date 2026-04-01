@@ -61,6 +61,6 @@
         app:itemIconTint="@color/teal_200"
         app:itemTextColor="@color/teal_200"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

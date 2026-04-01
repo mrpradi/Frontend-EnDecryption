@@ -19,12 +19,18 @@ object NotificationHelper {
     private const val PREFS_NAME = "NotificationPrefs"
     private const val SETTINGS_PREFS = "NotificationSettings"
 
-    fun showNotification(context: Context, title: String, description: String, iconRes: Int, settingKey: String) {
-        // 1. Check if this type of notification is enabled in settings
-        val settingsPrefs = context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE)
+    fun showNotification(
+        context: Context,
+        title: String,
+        description: String,
+        iconRes: Int,
+        settingKey: String
+    ) {
+        val userEmail = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE).getString("EMAIL", "default")
+        val settingsPrefs = context.getSharedPreferences("${SETTINGS_PREFS}_$userEmail", Context.MODE_PRIVATE)
         if (!settingsPrefs.getBoolean(settingKey, true)) return
 
-        // 2. Save notification to history (silently)
+        // 2. Save notification to history
         saveNotificationToHistory(context, title, description, iconRes)
 
         // 3. Show system push notification
@@ -47,8 +53,14 @@ object NotificationHelper {
             .setAutoCancel(true)
 
         try {
-            with(NotificationManagerCompat.from(context)) {
-                notify(System.currentTimeMillis().toInt(), builder.build())
+            if (androidx.core.content.ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == android.content.pm.PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < 33
+            ) {
+                with(NotificationManagerCompat.from(context)) {
+                    notify(System.currentTimeMillis().toInt(), builder.build())
+                }
             }
         } catch (e: SecurityException) {
             e.printStackTrace()
@@ -70,7 +82,8 @@ object NotificationHelper {
     }
 
     private fun saveNotificationToHistory(context: Context, title: String, description: String, iconRes: Int) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userEmail = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE).getString("EMAIL", "default")
+        val prefs = context.getSharedPreferences("${PREFS_NAME}_$userEmail", Context.MODE_PRIVATE)
         val gson = Gson()
         val json = prefs.getString("notification_list", null)
         
@@ -95,7 +108,8 @@ object NotificationHelper {
     }
 
     fun getNotifications(context: Context): List<Notification> {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userEmail = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE).getString("EMAIL", "default")
+        val prefs = context.getSharedPreferences("${PREFS_NAME}_$userEmail", Context.MODE_PRIVATE)
         if (prefs.getBoolean("clear_all", false)) return emptyList()
 
         val gson = Gson()
@@ -103,7 +117,7 @@ object NotificationHelper {
         val type = object : TypeToken<List<Notification>>() {}.type
         
         return if (json == null) {
-            listOf(Notification(R.drawable.ic_notification_bell, "Welcome to EnDecryption!", "You can find all your system activity and security alerts here.", "Just now", true))
+            emptyList()
         } else {
             gson.fromJson(json, type)
         }

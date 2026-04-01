@@ -1,6 +1,8 @@
 package com.simats.endecryption
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -58,6 +60,7 @@ class EncryptionActivity : BaseActivity() {
     
     private lateinit var decryptionKeyCard: MaterialCardView
     private lateinit var decryptionKeyText: TextView
+    private lateinit var copyKeyButton: Button
 
     private var fileUri: Uri? = null
     private var userEmail: String? = null
@@ -96,6 +99,13 @@ class EncryptionActivity : BaseActivity() {
             fileUri?.let { uri ->
                 if (userEmail != null) uploadAndEncryptFile(userEmail!!, uri)
                 else Toast.makeText(this, "Email not found. Please login again.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        copyKeyButton.setOnClickListener {
+            val key = decryptionKeyText.text.toString()
+            if (key.isNotEmpty()) {
+                copyToClipboard(key)
             }
         }
 
@@ -139,6 +149,14 @@ class EncryptionActivity : BaseActivity() {
         
         decryptionKeyCard = findViewById(R.id.decryption_key_card)
         decryptionKeyText = findViewById(R.id.decryption_key_text)
+        copyKeyButton = findViewById(R.id.copy_key_button)
+    }
+
+    private fun copyToClipboard(text: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Decryption Key", text)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(this, "Decryption key copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 
     private fun showConsentDialog() {
@@ -308,7 +326,7 @@ class EncryptionActivity : BaseActivity() {
                 downloadEncryptedFileButton.isEnabled = true
                 if (response.isSuccessful && response.body() != null) {
                     val bytes = response.body()!!.bytes()
-                    if (saveBytesToPublicStorage(bytes, "secure_$fileName.json")) {
+                    if (saveBytesToPublicStorage(bytes, fileName)) {
                         Toast.makeText(this@EncryptionActivity, "Downloaded to Downloads/EnDecryption", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@EncryptionActivity, "Download failed", Toast.LENGTH_SHORT).show()
@@ -355,16 +373,26 @@ class EncryptionActivity : BaseActivity() {
 
     private fun saveBytesToPublicStorage(bytes: ByteArray, fileName: String): Boolean {
         return try {
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/EnDecryption")
                 }
+                val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                uri?.let { contentResolver.openOutputStream(it)?.use { os -> os.write(bytes) } }
+                true
+            } else {
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val appDir = File(downloadsDir, "EnDecryption")
+                if (!appDir.exists()) appDir.mkdirs()
+                val file = File(appDir, fileName)
+                FileOutputStream(file).use { it.write(bytes) }
+                true
             }
-            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-            uri?.let { contentResolver.openOutputStream(it)?.use { os -> os.write(bytes) } }
-            true
-        } catch (e: Exception) { false }
+        } catch (e: Exception) { 
+            Log.e("Encryption", "Download Error", e)
+            false 
+        }
     }
 }

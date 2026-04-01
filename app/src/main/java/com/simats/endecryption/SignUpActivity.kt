@@ -121,7 +121,7 @@ class SignUpActivity : BaseActivity() {
                     Toast.makeText(this@SignUpActivity, response.body()?.message ?: "OTP Sent", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@SignUpActivity, VerifyOtpActivity::class.java)
                     intent.putExtra("EMAIL", email)
-                    intent.putExtra("NAME", name) // Pass name for welcome notification later
+                    intent.putExtra("NAME", name)
                     intent.putExtra("FROM_SIGNUP", true)
                     startActivity(intent)
                 } else {

@@ -2,6 +2,7 @@ package com.simats.endecryption
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.simats.endecryption.databinding.ActivityHistoryBinding
@@ -24,44 +25,50 @@ class HistoryActivity : BaseActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Retrieve email from SharedPreferences if not in Intent
         val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
         userEmail = intent.getStringExtra("EMAIL") ?: sharedPref.getString("EMAIL", null)
 
-        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = HistoryAdapter(mutableListOf())
-        binding.historyRecyclerView.adapter = adapter
-
+        setupRecyclerView()
+        
         if (userEmail != null) {
             fetchUserFiles(userEmail!!)
         } else {
             Toast.makeText(this, "Email not found. Please login again.", Toast.LENGTH_SHORT).show()
         }
 
-        binding.backButton.setOnClickListener {
+        binding.headerLayout.findViewById<View>(R.id.back_button).setOnClickListener {
             finish()
         }
 
         setupBottomNavigation(binding.bottomNavigation, R.id.navigation_history)
     }
 
+    private fun setupRecyclerView() {
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = HistoryAdapter(mutableListOf())
+        binding.historyRecyclerView.adapter = adapter
+    }
+
     private fun fetchUserFiles(email: String) {
-        ApiClient.instance.getUserFiles(email).enqueue(object : Callback<FileHistoryResponse> {
+        ApiClient.instance.getHistory(email).enqueue(object : Callback<FileHistoryResponse> {
             override fun onResponse(call: Call<FileHistoryResponse>, response: Response<FileHistoryResponse>) {
                 if (response.isSuccessful && response.body() != null) {
-                    val files = response.body()!!.files
+                    val files = response.body()?.files ?: emptyList()
                     
-                    // Filter/Sort from newest to oldest based on ID or createdAt if available
-                    // Assuming higher ID means newer, or use createdAt
-                    val sortedFiles = files.sortedByDescending { it.id }
-
-                    val historyItems = sortedFiles.map { file ->
-                        val displayTime = formatTimestamp(file.createdAt)
+                    val historyItems = files.map { file ->
+                        val type = file.fileType ?: "Unknown"
+                        val format = file.fileFormat ?: ""
+                        val capitalizedType = if (type.isNotBlank()) {
+                            type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                        } else {
+                            "Unknown"
+                        }
+                        
                         HistoryItem(
-                            title = file.fileName,
-                            subtitle = "${file.fileType.replaceFirstChar { it.uppercase() }} - ${file.fileFormat}",
+                            title = file.fileName ?: "Unnamed File",
+                            subtitle = if (format.isNotBlank()) "$capitalizedType - $format" else capitalizedType,
                             value = "",
-                            timestamp = displayTime
+                            timestamp = formatTimestamp(file.createdAt)
                         )
                     }
                     adapter.updateData(historyItems)
@@ -77,15 +84,14 @@ class HistoryActivity : BaseActivity() {
     }
 
     private fun formatTimestamp(timestamp: String?): String {
-        if (timestamp == null) return ""
+        if (timestamp.isNullOrEmpty()) return ""
         return try {
-            // Adjust pattern to match your backend's date format (e.g., ISO 8601)
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val date = inputFormat.parse(timestamp)
             val outputFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
             if (date != null) outputFormat.format(date) else timestamp
         } catch (e: Exception) {
-            timestamp // Return original if parsing fails
+            timestamp
         }
     }
 }

@@ -4,15 +4,16 @@
 
     <!-- Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:allowBackup="true"
         android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.EnDecryption">
 
@@ -30,6 +31,7 @@
         <activity android:name="com.simats.endecryption.LoginActivity" android:exported="false" />
         <activity android:name="com.simats.endecryption.ForgotPasswordActivity" android:exported="false" />
         <activity android:name="com.simats.endecryption.VerifyOtpActivity" android:exported="false" />
+        <activity android:name="com.simats.endecryption.VerifyOtp2Activity" android:exported="false" />
         <activity android:name="com.simats.endecryption.CreateNewPasswordActivity" android:exported="false" />
         <activity android:name="com.simats.endecryption.MainActivity" android:exported="false" />
         <activity android:name="com.simats.endecryption.EncryptionActivity" android:exported="false" />
@@ -51,6 +53,7 @@
         <activity android:name="com.simats.endecryption.TermsAndConditions2Activity" android:exported="false" />
         <activity android:name="com.simats.endecryption.PrivacyPolicyActivity" android:exported="false" />
         <activity android:name="com.simats.endecryption.LicensesActivity" android:exported="false" />
+        <activity android:name="com.simats.endecryption.SubscriptionActivity" android:exported="false" />
 
     </application>
 

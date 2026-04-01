@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.gson)
     implementation(libs.okhttp.logging)
+    implementation(libs.billing.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

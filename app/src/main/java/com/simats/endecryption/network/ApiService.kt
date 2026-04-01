@@ -20,13 +20,10 @@ interface ApiService {
     @GET("profile/{email}")
     fun getProfile(@Path("email") email: String): Call<UserProfile>
 
-    @PUT("update-profile/{current_email}")
-    fun updateProfile(
-        @Path("current_email") currentEmail: String,
-        @Body request: UpdateProfileRequest
-    ): Call<GenericResponse>
+    @POST("update-profile")
+    fun updateProfile(@Body request: UpdateProfileRequest): Call<GenericResponse>
 
-    @PUT("change-password")
+    @POST("change-password")
     fun changePassword(@Body request: ChangePasswordRequest): Call<GenericResponse>
 
     @Multipart
@@ -42,10 +39,35 @@ interface ApiService {
     @Multipart
     @POST("decrypt-file")
     fun decryptFile(
-        @Part file: MultipartBody.Part
+        @Part file: MultipartBody.Part,
+        @Part("decryption_key") decryptionKey: RequestBody,
+        @Part("email") email: RequestBody? = null
     ): Call<ResponseBody>
 
-    @GET("my-files/{email}")
+    @GET("encrypted-files/{email}")
     fun getUserFiles(@Path("email") email: String): Call<FileHistoryResponse>
 
+    @GET("encrypted-files/{email}")
+    fun getMyFiles(@Path("email") email: String): Call<FileHistoryResponse>
+
+    @POST("forgot-password")
+    fun forgotPassword(@Body request: ForgotPasswordRequest): Call<GenericResponse>
+
+    @POST("verify-otp")
+    fun verifyResetOtp(@Body request: VerifyOtpRequest): Call<GenericResponse>
+
+    @GET("history/{email}")
+    fun getHistory(@Path("email") email: String): Call<FileHistoryResponse>
+
+    @POST("resend-otp")
+    fun resendOtp(@Body request: ForgotPasswordRequest): Call<GenericResponse>
+
+    @POST("reset-password")
+    fun resetPassword(@Body request: ResetPasswordRequest): Call<GenericResponse>
+
+    @DELETE("wipe-data/{email}")
+    fun wipeData(@Path("email") email: String): Call<GenericResponse>
+
+    @GET("notifications/{email}")
+    fun getNotifications(@Path("email") email: String): Call<NotificationRemoteResponse>
 }

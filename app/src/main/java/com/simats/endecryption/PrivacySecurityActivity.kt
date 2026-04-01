@@ -11,11 +11,15 @@ class PrivacySecurityActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPrivacySecurityBinding
     private val PREFS_NAME = "PrivacySettings"
+    private var userEmail: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPrivacySecurityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+        userEmail = sharedPref.getString("EMAIL", null)
 
         loadSettings()
         setupClickListeners()
@@ -102,10 +106,26 @@ class PrivacySecurityActivity : BaseActivity() {
         val notificationPrefs = getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE)
         notificationPrefs.edit().putBoolean("clear_all", true).apply()
 
-        // 3. Clear history
+        // 3. Clear history locally
         val historyPrefs = getSharedPreferences("HistoryPrefs", Context.MODE_PRIVATE)
         historyPrefs.edit().clear().apply()
 
-        Toast.makeText(this, "All data has been deleted", Toast.LENGTH_LONG).show()
+        // 4. Wipe data from server
+        if (userEmail != null) {
+            com.simats.endecryption.network.ApiClient.instance.wipeData(userEmail!!).enqueue(object : retrofit2.Callback<com.simats.endecryption.network.GenericResponse> {
+                override fun onResponse(call: retrofit2.Call<com.simats.endecryption.network.GenericResponse>, response: retrofit2.Response<com.simats.endecryption.network.GenericResponse>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@PrivacySecurityActivity, "All remote and local data has been permanently deleted", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this@PrivacySecurityActivity, "Local data cleared, but server deletion failed", Toast.LENGTH_LONG).show()
+                    }
+                }
+                override fun onFailure(call: retrofit2.Call<com.simats.endecryption.network.GenericResponse>, t: Throwable) {
+                    Toast.makeText(this@PrivacySecurityActivity, "Local data cleared, but could not connect to server", Toast.LENGTH_LONG).show()
+                }
+            })
+        } else {
+            Toast.makeText(this, "Local data has been deleted", Toast.LENGTH_LONG).show()
+        }
     }
 }

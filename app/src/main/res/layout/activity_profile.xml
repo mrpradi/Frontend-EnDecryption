@@ -41,7 +41,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="#1A2F4B"
+                app:cardBackgroundColor="@android:color/transparent"
+                android:background="@drawable/bg_profile_banner"
                 app:cardCornerRadius="16dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -121,10 +122,11 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:id="@+id/full_name_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="16dp"
-                    android:text="Full Name: Secure User"
+                    android:text="Full Name: ..."
                     android:textColor="#B0B0B0"
                     app:drawableStartCompat="@android:drawable/ic_menu_myplaces" />
 
@@ -136,10 +138,11 @@
                     android:background="#1A2F4B" />
 
                 <TextView
+                    android:id="@+id/email_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="16dp"
-                    android:text="Email: user@secureemail.com"
+                    android:text="Email: ..."
                     android:textColor="#B0B0B0"
                     app:drawableStartCompat="@android:drawable/ic_dialog_email" />
 
@@ -151,10 +154,11 @@
                     android:background="#1A2F4B" />
 
                 <TextView
+                    android:id="@+id/age_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="16dp"
-                    android:text="Age: 25 years"
+                    android:text="Age: ..."
                     android:textColor="#B0B0B0"
                     app:drawableStartCompat="@android:drawable/ic_menu_my_calendar" />
 
@@ -201,9 +205,7 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="Push Notifications"
-                    android:textColor="@android:color/white"
-                    app:thumbTint="@color/switch_thumb_color"
-                    app:trackTint="@color/switch_track_color" />
+                    android:textColor="@android:color/white" />
 
                 <View
                     android:layout_width="match_parent"
@@ -319,11 +321,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#1A2F4B"
-        app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
+        app:itemIconTint="@color/teal_400"
+        app:itemTextColor="@color/teal_400"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -39,17 +39,35 @@ data class ChangePasswordRequest(
 )
 
 data class FileHistoryResponse(
-    val user: String,
-    val files: List<FileItem>
+    @SerializedName("encrypted_files", alternate = ["history", "files"]) val files: List<FileItem> = emptyList()
 )
 
 data class FileItem(
-    val id: Int,
-    @SerializedName("user_id") val userId: Int,
+    val id: Int = 0,
     @SerializedName("file_name") val fileName: String,
-    @SerializedName("file_format") val fileFormat: String,
-    @SerializedName("file_type") val fileType: String,
-    @SerializedName("decryption_key") val decryptionKey: String,
     @SerializedName("file_path") val filePath: String,
+    @SerializedName("file_type") val fileType: String = "",
+    @SerializedName("file_format") val fileFormat: String = "",
+    @SerializedName("file_size") val fileSize: Long = 0L,
+    @SerializedName("created_at") val createdAt: String? = null
+)
+
+data class ForgotPasswordRequest(
+    val email: String
+)
+
+data class ResetPasswordRequest(
+    val email: String,
+    val otp: String,
+    @SerializedName("new_password") val newPassword: String,
+    @SerializedName("confirm_password") val confirmPassword: String
+)
+
+data class NotificationRemoteResponse(
+    val notifications: List<NotificationRemoteItem> = emptyList()
+)
+
+data class NotificationRemoteItem(
+    val message: String,
     @SerializedName("created_at") val createdAt: String? = null
 )

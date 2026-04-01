@@ -1,11 +1,17 @@
 package com.simats.endecryption
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.simats.endecryption.databinding.ActivitySavedFilesBinding
-import java.io.File
+import com.simats.endecryption.network.ApiClient
+import com.simats.endecryption.network.FileHistoryResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SavedFilesActivity : BaseActivity() {
 
@@ -19,39 +25,65 @@ class SavedFilesActivity : BaseActivity() {
 
         // Retrieve email from SharedPreferences
         val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-        userEmail = intent.getStringExtra("EMAIL") ?: sharedPref.getString("EMAIL", null)
+        userEmail = sharedPref.getString("EMAIL", null)
 
         binding.savedFilesRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        val savedFiles = if (userEmail != null) getSavedFilesForUser(userEmail!!) else emptyList()
-        binding.savedFilesRecyclerView.adapter = SavedFilesAdapter(savedFiles)
-
-        binding.encryptedFilesCount.text = "${savedFiles.size} encrypted files"
-        binding.totalFilesCount.text = savedFiles.size.toString()
+        if (userEmail != null) {
+            fetchSavedFilesFromBackend(userEmail!!)
+        } else {
+            Toast.makeText(this, "User email not found", Toast.LENGTH_SHORT).show()
+        }
 
         setupBottomNavigation(binding.bottomNavigation, R.id.navigation_files)
-
-        val resultIntent = Intent()
-        resultIntent.putExtra("fileCount", savedFiles.size)
-        setResult(RESULT_OK, resultIntent)
         
         binding.backButton.setOnClickListener {
             finish()
         }
     }
 
-    private fun getSavedFilesForUser(email: String): List<SavedFile> {
-        // Create a user-specific directory for encrypted files
-        val userDirName = email.replace("@", "_").replace(".", "_")
-        val encryptedFilesDir = File(filesDir, "encrypted/$userDirName")
-        
-        if (!encryptedFilesDir.exists()) {
-            encryptedFilesDir.mkdirs()
-            return emptyList()
-        }
+    private fun fetchSavedFilesFromBackend(email: String) {
+        // Show progress or something if needed
+        binding.totalFilesCount.text = "..."
+        binding.encryptedFilesCount.text = "Fetching files..."
 
-        return encryptedFilesDir.listFiles()?.map { file ->
-            SavedFile(file.name, file.length(), file.lastModified())
-        } ?: emptyList()
+        ApiClient.instance.getUserFiles(email).enqueue(object : Callback<FileHistoryResponse> {
+            override fun onResponse(call: Call<FileHistoryResponse>, response: Response<FileHistoryResponse>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val fileList = response.body()!!.files
+                    
+                    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                    
+                    // Convert backend FileItem to SavedFile for the adapter
+                    val savedFiles = fileList.map { fileItem ->
+                        val date = try {
+                            fileItem.createdAt?.let { sdf.parse(it) }
+                        } catch (e: Exception) {
+                            null
+                        }
+                        
+                        SavedFile(
+                            id = fileItem.id,
+                            name = fileItem.fileName,
+                            size = fileItem.fileSize,
+                            lastModified = date?.time ?: 0L,
+                            filePath = fileItem.filePath
+                        )
+                    }
+
+                    binding.savedFilesRecyclerView.adapter = SavedFilesAdapter(savedFiles)
+                    binding.encryptedFilesCount.text = "${savedFiles.size} encrypted files"
+                    binding.totalFilesCount.text = savedFiles.size.toString()
+                } else {
+                    Log.e("SavedFilesActivity", "Error fetching files: ${response.code()}")
+                    Toast.makeText(this@SavedFilesActivity, "Failed to load files", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<FileHistoryResponse>, t: Throwable) {
+                Log.e("SavedFilesActivity", "Network error: ${t.message}")
+                Toast.makeText(this@SavedFilesActivity, "Network error", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

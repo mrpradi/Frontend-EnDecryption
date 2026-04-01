@@ -17,8 +17,9 @@ object ApiClient {
      * 3. Ensure your backend server is running on port 8000 and allows external connections (--host 0.0.0.0).
      */
     
-    // Change this to your current computer IP or 10.0.2.2 for emulator
-    private const val BASE_URL = "http://172.20.10.3:8000/" 
+    // EMULATOR: Use "http://10.0.2.2:8000/" 
+    // PHYSICAL DEVICE: Use your actual computer IP (e.g., "http://192.168.1.5:8000/")
+    const val BASE_URL = "http://180.235.121.245:8016/"
 
     val instance: ApiService by lazy {
         val logging = HttpLoggingInterceptor()
@@ -26,9 +27,9 @@ object ApiClient {
 
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .connectTimeout(15, TimeUnit.SECONDS) // Reduced timeout for faster error feedback
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS) // Increased timeout for sending OTP via email
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
             .build()
 

@@ -73,7 +73,7 @@ class EditProfileActivity : BaseActivity() {
         if (currentEmail == null) return
 
         val request = UpdateProfileRequest(name, email, age)
-        ApiClient.instance.updateProfile(currentEmail!!, request).enqueue(object : Callback<GenericResponse> {
+        ApiClient.instance.updateProfile(request).enqueue(object : Callback<GenericResponse> {
             override fun onResponse(call: Call<GenericResponse>, response: Response<GenericResponse>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@EditProfileActivity, "Profile updated successfully", Toast.LENGTH_SHORT).show()

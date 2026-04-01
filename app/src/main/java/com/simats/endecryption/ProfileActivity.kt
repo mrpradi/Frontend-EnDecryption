@@ -3,7 +3,6 @@ package com.simats.endecryption
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.simats.endecryption.databinding.ActivityProfileBinding
@@ -101,9 +100,8 @@ class ProfileActivity : BaseActivity() {
         binding.userName.text = profile.name
         binding.userEmail.text = profile.email
         
-        val profileInfoLayout = binding.profileInfoLayout
-        (profileInfoLayout.getChildAt(0) as? TextView)?.text = "Full Name: ${profile.name}"
-        (profileInfoLayout.getChildAt(2) as? TextView)?.text = "Email: ${profile.email}"
-        (profileInfoLayout.getChildAt(4) as? TextView)?.text = "Age: ${profile.age} years"
+        binding.fullNameInfo.text = "Full Name: ${profile.name}"
+        binding.emailInfo.text = "Email: ${profile.email}"
+        binding.ageInfo.text = "Age: ${profile.age} years"
     }
 }

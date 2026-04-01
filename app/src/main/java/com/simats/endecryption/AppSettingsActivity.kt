@@ -16,7 +16,7 @@ class AppSettingsActivity : BaseActivity() {
 
         setupClickListeners()
         loadSettings()
-        setupBottomNavigation(binding.bottomNavigation, R.id.navigation_settings)
+        setupBottomNavigation(binding.bottomNavigation, R.id.navigation_profile)
     }
 
     private fun setupClickListeners() {
